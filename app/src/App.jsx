@@ -1,21 +1,12 @@
-import { Connection, PublicKey } from "@solana/web3.js";
+import { Connection, PublicKey, Keypair } from "@solana/web3.js";
 import { AnchorProvider, Program } from "@coral-xyz/anchor";
 import idl from "./idl/solana_message_program.json";
 
-declare global {
-  interface Window {
-    solana?: any;
-  }
-}
-
 const NETWORK = "https://api.devnet.solana.com";
 
-export default function App() {
+function App() {
   const getProvider = () => {
-    if (!window.solana) {
-      throw new Error("Phantom wallet not installed");
-    }
-
+    if (!window.solana) throw new Error("Install Phantom");
     const connection = new Connection(NETWORK, "confirmed");
     return new AnchorProvider(connection, window.solana, {
       commitment: "confirmed",
@@ -24,21 +15,7 @@ export default function App() {
 
   const getProgram = () => {
     const provider = getProvider();
-    // 🔥 cast to any to silence TS – REQUIRED
-    return new Program(idl as any, provider) as any;
-  };
-
-  const getPda = () => {
-    const provider = getProvider();
-    const program = getProgram();
-
-    // PDA seed MUST match Rust (no string seed in your IDL)
-    const [pda] = PublicKey.findProgramAddressSync(
-      [provider.wallet.publicKey.toBuffer()],
-      program.programId
-    );
-
-    return pda;
+    return new Program(idl, provider);
   };
 
   const connectWallet = async () => {
@@ -48,15 +25,24 @@ export default function App() {
   const initialize = async () => {
     const provider = getProvider();
     const program = getProgram();
-    const pda = getPda();
+
+    // 🔴 THIS IS THE KEY FIX
+    const messageAccount = Keypair.generate();
 
     await program.methods
       .initialize("Hello Solana")
       .accounts({
-        messageAccount: pda,
+        messageAccount: messageAccount.publicKey,
         authority: provider.wallet.publicKey,
       })
+      .signers([messageAccount]) // 👈 REQUIRED
       .rpc();
+
+    // store pubkey so we can reuse it
+    localStorage.setItem(
+      "messageAccount",
+      messageAccount.publicKey.toBase58()
+    );
 
     alert("Initialized");
   };
@@ -64,12 +50,17 @@ export default function App() {
   const updateMessage = async () => {
     const provider = getProvider();
     const program = getProgram();
-    const pda = getPda();
+
+    const messagePubkey = localStorage.getItem("messageAccount");
+    if (!messagePubkey) {
+      alert("Initialize first");
+      return;
+    }
 
     await program.methods
       .update("Updated from frontend")
       .accounts({
-        messageAccount: pda,
+        messageAccount: new PublicKey(messagePubkey),
         authority: provider.wallet.publicKey,
       })
       .rpc();
@@ -79,10 +70,17 @@ export default function App() {
 
   const fetchMessage = async () => {
     const program = getProgram();
-    const pda = getPda();
 
-    // 🔥 bracket notation to bypass TS namespace typing
-    const account = await program.account["messageAccount"].fetch(pda);
+    const messagePubkey = localStorage.getItem("messageAccount");
+    if (!messagePubkey) {
+      alert("Initialize first");
+      return;
+    }
+
+    const account = await program.account.messageAccount.fetch(
+      new PublicKey(messagePubkey)
+    );
+
     alert(account.message);
   };
 
@@ -103,3 +101,5 @@ export default function App() {
     </div>
   );
 }
+
+export default App;
