@@ -1,72 +1,127 @@
-Solana Message DApp
-This project is a decentralized application (DApp) built on the Solana blockchain using the Anchor Framework. It enables users to store, update, and retrieve custom messages on the blockchain via a React-based web interface.
+# Solana Message DApp
 
-Project Structure
-The repository is organized into the smart contract logic and the frontend application:
+## Introduction
 
-programs/solana-message-program: Contains the Rust smart contract (Anchor program).
+Solana Message DApp is a decentralized application (DApp) built on the **Solana blockchain** using the **Anchor Framework**. It allows users to initialize a data account with a custom message, update that message, and fetch it directly from the blockchain through a **React-based web interface**.
 
-app: A React frontend built with Vite that interacts with the Solana network.
+---
 
-tests: TypeScript-based testing suite for the smart contract.
+## 📂 Project Structure
 
-Smart Contract (Anchor Program)
-The program, identified by the ID 6Jv2T6wLE2Hp53auaVkmDVDyzzM2yRf1ncdLt5ZgqhyA, manages simple data accounts on-chain.
+The repository is divided into the smart contract (program) and the frontend application:
 
-Instructions
-initialize: Sets up a new MessageAccount, designates the caller as the authority, and stores the initial message string.
+```text
+programs/
+ └── solana-message-program/   # Rust smart contract logic (Anchor program)
 
-update: Allows the authorized user (matching the authority field) to change the stored message.
+app/                           # React frontend built with Vite
 
-Data Account
-The MessageAccount struct stores:
+tests/                         # TypeScript-based testing suite
+```
 
-authority: The Pubkey of the user allowed to edit the message.
+---
 
-message: A String containing the message content.
+## 🦀 Smart Contract (Anchor Program)
 
-Frontend Application
-The frontend is a React application that integrates with the Phantom Wallet for transaction signing.
+The smart contract manages `MessageAccount` structures on-chain.
 
-Key Features
-Wallet Integration: Connects to the user's Solana wallet and displays the public key.
+- **Program ID:**  
+  `6Jv2T6wLE2Hp53auaVkmDVDyzzM2yRf1ncdLt5ZgqhyA`
 
-On-Chain Interactions:
+### Data Account Structure
 
-Initialize: Prompts the user to enter a message, generates a new Keypair for the account, and creates it on-chain.
+The `MessageAccount` stores the following fields:
 
-Update: Sends a transaction to modify the message in the existing account.
+- `authority` — `Pubkey` of the user authorized to modify the message
+- `message` — `String` containing the message content
 
-Fetch: Reads and displays the current message directly from the blockchain.
+### Instructions
 
-Network: Configured to interact with the Solana Devnet (https://api.devnet.solana.com).
+- **initialize**
+  - Creates a new `MessageAccount`
+  - Sets the caller as the authority
+  - Stores the initial message
 
-Prerequisites
-To build and run this project, you need:
+- **update**
+  - Allows only the authorized user
+  - Updates the stored message
 
-Rust: v1.89.0
+---
 
-Solana CLI Tools
+## 💻 Frontend Application
 
-Anchor Framework: v0.32.1
+The frontend is a **React** application built with **Vite** and integrated with **Phantom Wallet** for wallet connectivity and transaction signing.
 
-Node.js: v20 or higher (for the Vite frontend)
+### Key Features
 
-Installation and Setup
-Build the Program:
+- **Wallet Integration**
+  - Connects to the user's Solana wallet
+  - Displays the connected public key
 
-Bash
+- **On-Chain Interactions**
+  - **Initialize**
+    - Prompts the user for a message
+    - Generates a new account on-chain
+  - **Update**
+    - Updates the message in an existing account
+  - **Fetch**
+    - Reads the current message directly from the blockchain
 
+- **Network**
+  - Solana Devnet
+  - RPC Endpoint: https://api.devnet.solana.com
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Rust: v1.89.0
+- Solana CLI Tools
+- Anchor Framework: v0.32.1
+- Node.js: v20 or higher
+
+---
+
+## 📦 Installation and Setup
+
+### Clone the Repository
+
+```bash
+git clone <repository-url>
+cd solana-message-dapp
+```
+
+### Build and Test the Program
+
+```bash
 anchor build
-Run Tests:
-
-Bash
-
 anchor test
-Launch Frontend:
+```
 
-Bash
+### Launch the Frontend
 
+```bash
 cd app
 npm install
 npm run dev
+```
+
+---
+
+## 🛠 Configuration
+
+- **Anchor.toml**
+  - Configured for localnet by default
+  - Frontend is configured for devnet
+
+### Dependencies
+
+**Backend**
+- anchor-lang v0.32.1
+
+**Frontend**
+- react v19.2.0
+- @coral-xyz/anchor v0.32.1
+- @solana/web3.js v1.98.4
