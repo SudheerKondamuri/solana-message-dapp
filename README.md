@@ -89,7 +89,7 @@ The frontend is a **React** application built with **Vite** and integrated with 
 ### Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/SudheerKondamuri/solana-message-dapp
 cd solana-message-dapp
 ```
 
