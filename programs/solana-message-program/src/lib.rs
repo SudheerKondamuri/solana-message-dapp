@@ -1,16 +1,20 @@
 use anchor_lang::prelude::*;
+use instructions::*;
 
-declare_id!("6Jv2T6wLE2Hp53auaVkmDVDyzzM2yRf1ncdLt5ZgqhyA");
+pub mod instructions;
+pub mod state;
+pub mod constants;
+pub mod error;
+
+declare_id!("DyhyE5QYFksFcLrHwQBkTxrecmmNtYgjmBht6Qmp1q6u");
 
 #[program]
 pub mod solana_message_program {
     use super::*;
 
+    // Use the modular handler from instructions/initialize.rs
     pub fn initialize(ctx: Context<Initialize>, message: String) -> Result<()> {
-        let account = &mut ctx.accounts.message_account;
-        account.authority = ctx.accounts.authority.key();
-        account.message = message;
-        Ok(())
+        instructions::initialize::handler(ctx, message)
     }
 
     pub fn update(ctx: Context<Update>, new_message: String) -> Result<()> {
@@ -21,28 +25,9 @@ pub mod solana_message_program {
 }
 
 #[derive(Accounts)]
-pub struct Initialize<'info> {
-    #[account(
-        init,
-        payer = authority,
-        space = 8 + 32 + 4 + 200
-    )]
-    pub message_account: Account<'info, MessageAccount>,
-
-    #[account(mut)]
-    pub authority: Signer<'info>,
-
-    pub system_program: Program<'info, System>,
-}
-
-#[derive(Accounts)]
 pub struct Update<'info> {
-    #[account(
-        mut,
-        has_one = authority
-    )]
+    #[account(mut, has_one = authority)]
     pub message_account: Account<'info, MessageAccount>,
-
     pub authority: Signer<'info>,
 }
 
