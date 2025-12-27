@@ -9,9 +9,22 @@ export const useMessageProgram = (wallet) => {
     const [loading, setLoading] = useState(false);
 
     const getProgram = () => {
+        if (!wallet) return null;
         const connection = new Connection(NETWORK, "confirmed");
         const provider = new AnchorProvider(connection, wallet, { commitment: "confirmed" });
         return new Program(idl, provider);
+    };
+
+    const fetchMessage = async (messageAccountPubkey) => {
+        try {
+            const program = getProgram();
+            if (!program) return null;
+            const account = await program.account.messageAccount.fetch(new PublicKey(messageAccountPubkey));
+            return account.message;
+        } catch (e) {
+            console.error("Fetch Error:", e);
+            return null;
+        }
     };
 
     const initializeMessage = async (message) => {
@@ -48,5 +61,5 @@ export const useMessageProgram = (wallet) => {
         }
     };
 
-    return { initializeMessage, updateMessage, loading };
+    return { initializeMessage, updateMessage, fetchMessage, loading, getProgram };
 };
