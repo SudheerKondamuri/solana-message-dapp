@@ -12,7 +12,7 @@ declare_id!("DyhyE5QYFksFcLrHwQBkTxrecmmNtYgjmBht6Qmp1q6u");
 pub mod solana_message_program {
     use super::*;
 
-    // Use the modular handler from instructions/initialize.rs
+    
     pub fn initialize(ctx: Context<Initialize>, message: String) -> Result<()> {
         instructions::initialize::handler(ctx, message)
     }

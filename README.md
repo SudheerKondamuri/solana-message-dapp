@@ -26,7 +26,7 @@ tests/                         # TypeScript-based testing suite
 The smart contract manages `MessageAccount` structures on-chain.
 
 - **Program ID:**  
-  `6Jv2T6wLE2Hp53auaVkmDVDyzzM2yRf1ncdLt5ZgqhyA`
+  `DyhyE5QYFksFcLrHwQBkTxrecmmNtYgjmBht6Qmp1q6u`
 
 ### Data Account Structure
 
